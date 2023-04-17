@@ -62,15 +62,41 @@ function pickFrequency(obj, num) {
     return reqObject;
 };
 
+const updateGroupedDomainCounter = (dict, domainSet) => {
+    const groupedDomainSearch = new RegExp('[^\.]*');
+    for (let i = 0; i < flArray.length; i++) {
+        for (let item of domainSet) {
+            if (flArray[i].match('.*@' + item + '$')) {
+                const groupedKey = item.match(groupedDomainSearch);
+                dict[groupedKey]++;
+            }
+        }
+    }
+    return dict;
+}
+
+const getGroupedDomainSet = (domainSet) => {
+    const groupedDomainSearch = new RegExp('[^\.]*')
+    const groupedDomainList = [];
+    for (let item of domainSet) {
+        const groupedDomain = item.match(groupedDomainSearch);
+        groupedDomainList.push(groupedDomain);
+    }
+    return new Set(groupedDomainList);
+}
+
 const domainSet = getDomain();
 const domainCounter = getDomainCounter(domainSet);
 const emailDict = updateDomainCounter(domainCounter, domainSet);
 
+const groupedDomainSet = getGroupedDomainSet(domainSet);
+const groupedDomainCounter = getDomainCounter(groupedDomainSet);
+const groupedResult = updateGroupedDomainCounter(groupedDomainCounter, domainSet)
+
 // Prompt user to select an option
-console.log("What would you like to know? \n Option 1: Top 10 most common domain names \n Option 2: More than xxx occurences");
+console.log("What would you like to know? \n Option 1: Top 10 most common domain names \n Option 2: More than xxx occurences \n Option 3: Domains grouped by name");
 let emailOption = prompt();
-console.log(parseInt(emailOption)!=1);
-while(parseInt(emailOption) != 1 && parseInt(emailOption) != 2){
+while(parseInt(emailOption) != 1 && parseInt(emailOption) != 2 && parseInt(emailOption) != 3){
         console.log("Invalid choice. Please choose 1 or 2");
         emailOption = prompt();
 }
@@ -84,3 +110,6 @@ let domainOccurance = prompt();
 const results2 = pickFrequency(emailDict,domainOccurance);
 console.log(results2);
 }
+else if( parseInt(emailOption) == 3){
+    console.log(groupedResult);
+    }
