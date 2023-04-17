@@ -1,7 +1,6 @@
-// What are the 10 most common email address domains in the text file, and how often do they appear?
-
 // Import test.txt
 import fs from "fs";
+import { prompt } from "readline-sync";
 const contents = fs.readFileSync("test.txt", 'utf8');
 const flArray = contents.split(/\s+/);
 
@@ -29,15 +28,15 @@ function getDomainCounter(domainSet) {
 }
 
 //Update the counter for each time the domain name exists in the array of domain names
-function updateDomainCounter(emailDict, domainSet) {
+function updateDomainCounter(domainsCounter, domainSet) {
     for (let i = 0; i < flArray.length; i++) {
         for (let item of domainSet) {
             if (flArray[i].match('.*@' + item + '$')) {
-                emailDict[item]++;
+                domainsCounter[item]++;
             }
         }
     }
-    return emailDict;
+    return domainsCounter;
 }
 
 //Sort the dictionary by counter and grab the 10 highest
@@ -51,10 +50,37 @@ function pickHighest(obj, num) {
     return topTen;
 };
 
+
+//Sort the dictionary by counter and grab those above user input
+function pickFrequency(obj, num) {
+    const reqObject = {};
+    Object.keys(obj).forEach((key) => {
+        if (obj[key] >= num) {
+            reqObject[key] = obj[key];
+        }
+    });
+    return reqObject;
+};
+
 const domainSet = getDomain();
 const domainCounter = getDomainCounter(domainSet);
 const emailDict = updateDomainCounter(domainCounter, domainSet);
-const results = pickHighest(emailDict,10);
 
-// Show top 10 domain names and how often they occur. 
+// Prompt user to select an option
+console.log("What would you like to know? \n Option 1: Top 10 most common domain names \n Option 2: More than xxx occurences");
+let emailOption = prompt();
+console.log(parseInt(emailOption)!=1);
+while(parseInt(emailOption) != 1 && parseInt(emailOption) != 2){
+        console.log("Invalid choice. Please choose 1 or 2");
+        emailOption = prompt();
+}
+if(parseInt(emailOption) == 1){
+const results = pickHighest(emailDict,10);
 console.log(results);
+}
+else if( parseInt(emailOption) == 2){
+console.log("Please provide a number:")
+let domainOccurance = prompt();
+const results2 = pickFrequency(emailDict,domainOccurance);
+console.log(results2);
+}
